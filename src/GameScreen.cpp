@@ -25,15 +25,17 @@ void Game::GameScreen::Init() {
     lives.clear();
 
     //init bullet with null
-    bullet = NULL;
+    Vector2 bulletPos = { -100, -100 };
+    this->bullet = Sprite(bulletTexture, bulletPos , false, 0, 5.0f, 16);
 
     //create cat
-    cat = new Sprite(catTexture, { (float) 10, (float)(Utils::ScreenHeight/2) }, true, 0, 3.0f, 32);
+    Vector2 catPos = { (float)10, (float)(Utils::ScreenHeight / 2) };
+    this->cat = Sprite(catTexture, catPos, true, 0, 3.0f, 32);
     
     //create lives
     for (int i = 0; i < 3; i++) {
-    Sprite* live = new Sprite(heartTexture, { live1 - (40 * (i + 1)), (float)5 }, true, 0, 0, 16);
-    lives.push_back(std::move(live));
+        Vector2 pos = { live1 - (40 * (i + 1)), (float)5 };
+        lives.emplace_back(heartTexture, pos , true, 0, 0, 16);
     }
 
     //create enemies
@@ -41,8 +43,8 @@ void Game::GameScreen::Init() {
         for (int y = 0; y < 12; y++) {
             unsigned int posX = (x + 1) * (Utils::SPRITE_WIDTH + Utils::SPACE);
             unsigned int posY = y * (Utils::SPRITE_HEIGHT + Utils::SPACE);
-            Sprite* s = new Sprite(zucchiniTexture, { (float)(Utils::ScreenWidth - posX), (float)(posY + 45) }, true, 10, 0.05f, 32);
-            sprites.push_back(std::move(s));
+            Vector2 pos = { (float)(Utils::ScreenWidth - posX), (float)(posY + 45) };
+            sprites.emplace_back(zucchiniTexture, pos, true, 10, 0.05f, 32);
         }
     }
 }
@@ -60,23 +62,23 @@ void Game::GameScreen::ProcessInput() {
             //return to main menu
             currentScreen = &menuScreen;
         }
-        else if (bullet == NULL) {
+        else if (!bullet.visible) {
             //cat-bullet created wih mouse click
-            float bulletPosX = cat->pos.x + 12;
-            float bulletPosY = cat->pos.y + 8;
+            float bulletPosX = cat.pos.x + 12;
+            float bulletPosY = cat.pos.y + 8;
 
-            bullet = new Sprite(bulletTexture, { bulletPosX, bulletPosY }, true, 0, 5.0f, 16);
+            bullet.pos = { bulletPosX, bulletPosY };
         }
     }
 
     //move the cat
     if (IsKeyDown(KEY_W)) {
-        if (cat->pos.y >= 35)
-            cat->MoveUp();
+        if (cat.pos.y >= 35)
+            cat.MoveUp();
     }
     if (IsKeyDown(KEY_S)) {
-        if (cat->pos.y <= Utils::ScreenHeight - 75) {
-            cat->MoveDown();
+        if (cat.pos.y <= Utils::ScreenHeight - 75) {
+            cat.MoveDown();
         }
     }
 }
@@ -131,20 +133,20 @@ void Game::GameScreen::Draw() {
     }
 
     //draw sprites
-    cat->Draw();
+    cat.Draw();
 
-    for (Sprite* live : lives) {
-        live->Draw();
+    for (Sprite &live : lives) {
+        live.Draw();
     }
 
-    for (Sprite* s : sprites) {
-        s->Draw();
+    for (Sprite &s : sprites) {
+        s.Draw();
     }
 
-    if (bullet != NULL) bullet->Draw();
+    if (!bullet.visible) bullet.Draw();
 
-    for (Sprite* b : sprite_bullets) {
-        b->Draw();
+    for (Sprite &b : sprite_bullets) {
+        b.Draw();
     }
     
 
@@ -156,26 +158,24 @@ void Game::GameScreen::SetScore(Scores** scores) {
     this->scores = scores;
 }
 
-bool Game::GameScreen::CheckCollision(Sprite* s1, Sprite* s2) {
-    return (s1->pos.x < s2->pos.x + s2->size && s1->pos.x + s1->size > s2->pos.x
-        && s1->pos.y < s2->pos.y + s2->size && s1->pos.y + s1->size > s2->pos.y);
+bool Game::GameScreen::CheckCollision(const Sprite& s1, const Sprite& s2) {
+    return (s1.pos.x < s2.pos.x + s2.size && s1.pos.x + s1.size > s2.pos.x
+        && s1.pos.y < s2.pos.y + s2.size && s1.pos.y + s1.size > s2.pos.y);
 }
 
 void Game::GameScreen::ManageCatBullets() {
-    if (bullet != NULL) {
-        bullet->MoveRight();
+    if (!bullet.visible) {
+        bullet.MoveRight();
         //Collision detection
-        bool destroyed = false;
-        for (int j = sprites.size() - 1; j >= 0 && bullet != NULL; j--) {
-            Sprite* s = sprites.at(j);
+        for (int j = sprites.size() - 1; j >= 0 && !bullet.visible; j--) {
+            const Sprite& s = sprites.at(j);
             if (CheckCollision(bullet, s)) {
-                bullet = NULL;
-                score += s->points;;
+                bullet.visible = false;
+                score += s.points;;
                 sprites.erase(sprites.begin() + j);
-                delete s;
             }
         }
-        if (bullet != NULL && bullet->pos.x >= Utils::ScreenWidth) bullet = NULL;
+        if (!bullet.visible && bullet.pos.x >= Utils::ScreenWidth) bullet.visible = false;
     }
 }
 
@@ -183,12 +183,12 @@ void Game::GameScreen::ManageSpritesShootBack() {
     //Check which enemies are allowed to shoot
     allowedToShotSprites.clear();
     if (frames % 100 == 0) {
-        for (Sprite* s : sprites) {
+        for (Sprite &s : sprites) {
             bool allowed = true;
 
-            for (Sprite* c : sprites) {
-                if (s->pos.y == c->pos.y) {
-                    if (c->pos.x < s->pos.x) {
+            for (Sprite &c : sprites) {
+                if (s.pos.y == c.pos.y) {
+                    if (c.pos.x < s.pos.x) {
                         allowed = false;
                     }
                 }
@@ -202,8 +202,9 @@ void Game::GameScreen::ManageSpritesShootBack() {
 
     if (size > 0) {
         int random = GetRandomValue(0, size - 1);
-        Sprite* shot = allowedToShotSprites.at(random);
-        Sprite* b = new Sprite(sprite_bulletTexture, { shot->pos.x - 16, shot->pos.y + 8 }, true, 0, 5.0f, 16);
+        Sprite &shot = allowedToShotSprites.at(random);
+        Vector2 pos = { shot.pos.x - 16, shot.pos.y + 8 };
+        Sprite b (sprite_bulletTexture, pos, true, 0, 5.0f, 16);
         sprite_bullets.push_back(std::move(b));
     }
 }
@@ -212,27 +213,27 @@ void Game::GameScreen::MoveEnemies() {
     //move all enemy bullets & check if cat is hitted. then withdraw 1 live
     for (int i = sprite_bullets.size() - 1; i >= 0; i--) {
         bool hit = false;
-        Sprite* sprite_bullet = sprite_bullets.at(i);
+        Sprite& sprite_bullet = sprite_bullets.at(i);
         
         //move
-        sprite_bullet->MoveLeft();
+        sprite_bullet.MoveLeft();
         //check hit of cat
         if (CheckCollision(sprite_bullet, cat)) {
             lives.erase(lives.begin());
             sprite_bullets.erase(sprite_bullets.begin() + i);
         }
         //check if sprite bullet hits cat bullet
-        if (bullet != NULL && CheckCollision(bullet, sprite_bullet)) {
+        if (!bullet.visible && CheckCollision(bullet, sprite_bullet)) {
             sprite_bullets.erase(sprite_bullets.begin() + i);
-            bullet = NULL;
+            bullet.visible = false;
         }
     }
 
     //move the enemies
     for (int i = sprites.size() - 1; i >= 0; i--) {
-        Sprite* sp = sprites.at(i);
-        sp->MoveLeft();
-        if (sp->pos.y <= 0) sprites.erase(sprites.begin() + i);
+        Sprite &sp = sprites.at(i);
+        sp.MoveLeft();
+        if (sp.pos.y <= 0) sprites.erase(sprites.begin() + i);
     }
 }
 

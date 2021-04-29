@@ -12,12 +12,12 @@ namespace Game {
     public:
         Scores** scores;
        
-        std::vector<Sprite*> sprites;
-        std::vector<Sprite*> sprite_bullets;
-        std::vector<Sprite*> lives;
-        std::vector<Sprite*> allowedToShotSprites;
-        Sprite* cat;
-        Sprite* bullet;
+        std::vector<Sprite> sprites;
+        std::vector<Sprite> sprite_bullets;
+        std::vector<Sprite> lives;
+        std::vector<Sprite> allowedToShotSprites;
+        Sprite cat;
+        Sprite bullet;
 
         Texture2D catTexture;
         Texture2D zucchiniTexture;
@@ -42,7 +42,7 @@ namespace Game {
 
         void SetScore(Scores** scores);
 
-        bool CheckCollision(Sprite* s1, Sprite* s2);
+        bool CheckCollision(const Sprite& s1, const Sprite& s2);
 
         void ManageCatBullets();
 
