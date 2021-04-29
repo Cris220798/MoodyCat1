@@ -1,3 +1,0 @@
-C:/Users/crist/source/repos/MoodyCat1/MoodyCat1/out/build/x64-Debug (Standard)/CMakeFiles/MoodyCat1.dir
-C:/Users/crist/source/repos/MoodyCat1/MoodyCat1/out/build/x64-Debug (Standard)/CMakeFiles/edit_cache.dir
-C:/Users/crist/source/repos/MoodyCat1/MoodyCat1/out/build/x64-Debug (Standard)/CMakeFiles/rebuild_cache.dir
