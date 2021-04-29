@@ -15,7 +15,7 @@ Game::WinScreen winScreen;
 
 Game::Screen* currentScreen = &menuScreen;
 
-Scores* scores = new Scores();
+Scores scores = Scores();
 
 
 int main() {
@@ -40,8 +40,8 @@ int main() {
 
     gameScreen.Init();
     gameScreen.SetScore(&scores);
-    scores->Init();
-    scores->ReadFile();
+    scores.Init();
+    scores.ReadFile();
     scoreScreen.SetScores(&scores);
 
     // Main game loop

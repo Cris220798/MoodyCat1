@@ -95,9 +95,8 @@ void Game::GameScreen::Update() {
         else {
             currentScreen = &loseScreen;
         }
-        Scores* s = *scores;
-        s->AddScore(score);
-        s->WriteFile();
+        scores->AddScore(score);
+        scores->WriteFile();
     }
     
 
@@ -154,7 +153,7 @@ void Game::GameScreen::Draw() {
     DrawText(itoa(score, groesse, 10), 210, 10, 25, LIGHTGRAY);
 }
 
-void Game::GameScreen::SetScore(Scores** scores) {
+void Game::GameScreen::SetScore(Scores* scores) {
     this->scores = scores;
 }
 

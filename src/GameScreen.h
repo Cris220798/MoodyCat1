@@ -10,7 +10,7 @@
 namespace Game {
     class GameScreen : public Screen {
     public:
-        Scores** scores;
+        Scores* scores;
        
         std::vector<Sprite> sprites;
         std::vector<Sprite> sprite_bullets;
@@ -40,7 +40,7 @@ namespace Game {
 
         void Draw() override;
 
-        void SetScore(Scores** scores);
+        void SetScore(Scores* scores);
 
         bool CheckCollision(const Sprite& s1, const Sprite& s2);
 

@@ -6,7 +6,7 @@
 namespace Game {
     class HighscoreScreen : public Screen {
     public:
-        Scores** scores;
+        Scores* scores;
 
         void ProcessInput() override;
 
@@ -14,7 +14,7 @@ namespace Game {
 
         void Draw() override;
 
-        void SetScores(Scores** scores);
+        void SetScores(Scores* scores);
 
     };
 }
