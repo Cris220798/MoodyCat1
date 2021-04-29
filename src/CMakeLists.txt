@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable(${PROJECT_NAME} main.cpp helper.h Screen.h game.h  MenuScreen.cpp MenuScreen.h GameScreen.cpp GameScreen.h Screen.cpp Sprite.h Sprite.cpp            "HighscoreScreen.h" "HighscoreScreen.cpp" "LoseScreen.h" "LoseScreen.cpp"   "WinScreen.h" "WinScreen.cpp" "Scores.h" "Scores.cpp")
+add_executable(${PROJECT_NAME} main.cpp helper.h Screen.h game.h  MenuScreen.cpp MenuScreen.h GameScreen.cpp GameScreen.h  Sprite.h Sprite.cpp            "HighscoreScreen.h" "HighscoreScreen.cpp" "LoseScreen.h" "LoseScreen.cpp"   "WinScreen.h" "WinScreen.cpp" "Scores.h" "Scores.cpp" )
 
 # Add config.h.in file
 configure_file(config.h.in config.h)
