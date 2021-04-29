@@ -39,12 +39,12 @@ void Game::GameScreen::Init() {
     }
 
     //create enemies
-    for (int x = 0; x < 9; x++) {
-        for (int y = 0; y < 12; y++) {
+    for (int x = 0; x < 8; x++) {
+        for (int y = 0; y < 8; y++) {
             unsigned int posX = (x + 1) * (Utils::SPRITE_WIDTH + Utils::SPACE);
             unsigned int posY = y * (Utils::SPRITE_HEIGHT + Utils::SPACE);
             Vector2 pos = { (float)(Utils::ScreenWidth - posX), (float)(posY + 45) };
-            sprites.emplace_back(zucchiniTexture, pos, true, 10, 0.05f, 32);
+            sprites.emplace_back(zucchiniTexture, pos, true, 10, 0.2f, 32);
         }
     }
 }
@@ -68,6 +68,7 @@ void Game::GameScreen::ProcessInput() {
             float bulletPosY = cat.pos.y + 8;
 
             bullet.pos = { bulletPosX, bulletPosY };
+            bullet.visible = true;
         }
     }
 
@@ -85,20 +86,15 @@ void Game::GameScreen::ProcessInput() {
 
 void Game::GameScreen::Update() {
     
-    if (sprites.empty() || lives.empty()) {
-        //check if won
-        if (sprites.empty()) {
-            currentScreen = &winScreen;
-        }
-
-        //game over
-        else {
-            currentScreen = &loseScreen;
-        }
+    //check if won
+    if (sprites.empty()) {
+        currentScreen = &winScreen;
         scores->AddScore(score);
         scores->WriteFile();
     }
-    
+    else if (lives.empty()) {
+        GameOver();
+    }    
 
     ManageCatBullets();
 
@@ -142,7 +138,7 @@ void Game::GameScreen::Draw() {
         s.Draw();
     }
 
-    if (!bullet.visible) bullet.Draw();
+    if (bullet.visible) bullet.Draw();
 
     for (Sprite &b : sprite_bullets) {
         b.Draw();
@@ -163,18 +159,19 @@ bool Game::GameScreen::CheckCollision(const Sprite& s1, const Sprite& s2) {
 }
 
 void Game::GameScreen::ManageCatBullets() {
-    if (!bullet.visible) {
+    if (bullet.visible) {
         bullet.MoveRight();
         //Collision detection
-        for (int j = sprites.size() - 1; j >= 0 && !bullet.visible; j--) {
+        for (int j = sprites.size() - 1; j >= 0 && bullet.visible; j--) {
             const Sprite& s = sprites.at(j);
             if (CheckCollision(bullet, s)) {
                 bullet.visible = false;
+                bullet.pos = { -100, -100 };
                 score += s.points;;
                 sprites.erase(sprites.begin() + j);
             }
         }
-        if (!bullet.visible && bullet.pos.x >= Utils::ScreenWidth) bullet.visible = false;
+        if (bullet.visible && bullet.pos.x >= Utils::ScreenWidth) bullet.visible = false;
     }
 }
 
@@ -203,8 +200,7 @@ void Game::GameScreen::ManageSpritesShootBack() {
         int random = GetRandomValue(0, size - 1);
         Sprite &shot = allowedToShotSprites.at(random);
         Vector2 pos = { shot.pos.x - 16, shot.pos.y + 8 };
-        Sprite b (sprite_bulletTexture, pos, true, 0, 5.0f, 16);
-        sprite_bullets.push_back(std::move(b));
+        sprite_bullets.emplace_back(sprite_bulletTexture, pos, true, 0, 5.0f, 16);
     }
 }
 
@@ -228,14 +224,46 @@ void Game::GameScreen::MoveEnemies() {
         }
     }
 
+    //check direction
+    bool found = false;
+    Direction oldDir = dir;
+    Direction newDir;
+    for (int i = 0; !found && i < sprites.size(); i++) {
+        Sprite& sp = sprites.at(i);
+        if (dir == UP && sp.pos.y - sp.speed <= 44 || dir == DOWN && sp.pos.y + sp.size + sp.speed >= Utils::ScreenHeight - 45) {
+            if (oldDir == UP) newDir = DOWN;
+            else newDir = UP;
+            dir = LEFT;
+            found = true;
+        }
+    }
+
     //move the enemies
     for (int i = sprites.size() - 1; i >= 0; i--) {
         Sprite &sp = sprites.at(i);
-        sp.MoveLeft();
+        if (found) sp.speed = 20.0f;
+        switch (dir) {
+            case LEFT: sp.MoveLeft(); break;
+            case RIGHT: sp.MoveRight(); break;
+            case UP: sp.MoveUp(); break;
+            case DOWN: sp.MoveDown(); break;
+            default: break;
+        }
+        if (found) sp.speed = 0.5f;
         if (sp.pos.y <= 0) sprites.erase(sprites.begin() + i);
+        //check if enemies are too close
+        if (sp.pos.x <= Utils::ScreenWidth / 3) GameOver();
     }
+
+    if (found) dir = newDir;
 }
 
 bool Game::GameScreen::IsMouseIn(Vector2 mouse, int xMin, int xMax, int yMin, int yMax) {
     return (mouse.x > xMin) && (mouse.y > yMin) && (mouse.x < xMax) && (mouse.y < yMax);
+}
+
+void Game::GameScreen::GameOver() {
+    currentScreen = &loseScreen;
+    scores->AddScore(score);
+    scores->WriteFile();
 }

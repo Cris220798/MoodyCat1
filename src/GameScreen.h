@@ -5,6 +5,7 @@
 #include "Screen.h"
 #include "Sprite.h"
 #include "Scores.h"
+#include "Direction.h"
 
 
 namespace Game {
@@ -18,6 +19,7 @@ namespace Game {
         std::vector<Sprite> allowedToShotSprites;
         Sprite cat;
         Sprite bullet;
+        Direction dir = DOWN;
 
         Texture2D catTexture;
         Texture2D zucchiniTexture;
@@ -51,5 +53,7 @@ namespace Game {
         void MoveEnemies();
 
         bool IsMouseIn(Vector2 mouse, int xMin, int xMax, int yMin, int yMax);
+
+        void GameOver();
     };
 }
