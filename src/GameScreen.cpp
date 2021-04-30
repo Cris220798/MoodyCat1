@@ -239,6 +239,9 @@ void Game::GameScreen::MoveEnemies() {
             sprite_bullets.erase(sprite_bullets.begin() + i);
             bullet.visible = false;
         }
+        //check if bullet leaves screen
+        if(sprite_bullet.pos.x < -sprite_bullet.size)
+            sprite_bullets.erase(sprite_bullets.begin() + i);
     }
 
     //check direction
@@ -258,21 +261,20 @@ void Game::GameScreen::MoveEnemies() {
     //move the enemies
     for (int i = sprites.size() - 1; i >= 0; i--) {
         Sprite &sp = sprites.at(i);
-        if (found) sp.speed = 20.0f;
+        if (dir == LEFT) sp.speed = 20.0f;
+        else sp.speed = 0.3f;
         switch (dir) {
             case LEFT: sp.MoveLeft(); break;
             case RIGHT: sp.MoveRight(); break;
             case UP: sp.MoveUp(); break;
             case DOWN: sp.MoveDown(); break;
             default: break;
-        }
-        if (found) sp.speed = 0.5f;
-        if (sp.pos.y <= 0) sprites.erase(sprites.begin() + i);
+        } 
         //check if enemies are too close
         if (sp.pos.x <= Utils::ScreenWidth / 3) GameOver();
     }
 
-    if (found) dir = newDir;
+    if (dir == LEFT) dir = newDir;
 }
 
 bool Game::GameScreen::IsMouseIn(Vector2 mouse, int xMin, int xMax, int yMin, int yMax) {
@@ -298,7 +300,7 @@ void Game::GameScreen::ManageSnake() {
             snake.lives--;
         }
 
-        if (snake.pos.y < 0) {
+        if (snake.pos.y - snake.size < 0) {
             snake.visible = false;
         }   
     }
