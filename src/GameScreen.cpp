@@ -7,6 +7,7 @@
 #include "Sprite.h"
 #include "utils.h"
 #include "Scores.h"
+#include "Snake.h"
 
 void Game::GameScreen::Init() {
     //init attributes
@@ -18,11 +19,17 @@ void Game::GameScreen::Init() {
     heartTexture = LoadTexture("./assets/graphics/heart.png");
     sprite_bulletTexture = LoadTexture("./assets/graphics/sprite_bullet.png");
     bulletTexture = LoadTexture("./assets/graphics/bullet.png");
+    milkTexture = LoadTexture("./assets/graphics/milk.png");
+    snakeTexture = LoadTexture("./assets/graphics/snake.png");
 
     //clear vectors
     sprites.clear();
     sprite_bullets.clear();
     lives.clear();
+
+    //init snake
+    Vector2 snakePos = { -200, -200 };
+    this->snake = Snake(snakeTexture, snakePos, false, 100, 5.0f, 16);
 
     //init bullet with null
     Vector2 bulletPos = { -100, -100 };
@@ -43,8 +50,15 @@ void Game::GameScreen::Init() {
         for (int y = 0; y < 8; y++) {
             unsigned int posX = (x + 1) * (Utils::SPRITE_WIDTH + Utils::SPACE);
             unsigned int posY = y * (Utils::SPRITE_HEIGHT + Utils::SPACE);
-            Vector2 pos = { (float)(Utils::ScreenWidth - posX), (float)(posY + 45) };
-            sprites.emplace_back(zucchiniTexture, pos, true, 10, 0.2f, 32);
+            Vector2 pos = { (float)(Utils::ScreenWidth - 60 - posX), (float)(posY + 45) };
+            int rand = GetRandomValue(1, 100);
+            if (rand >= 1 && rand <= 30) {
+                sprites.emplace_back(milkTexture, pos, true, 20, 0.2f, 32);
+            }
+            else {
+                sprites.emplace_back(zucchiniTexture, pos, true, 10, 0.2f, 32);
+            }
+            
         }
     }
 }
@@ -101,6 +115,8 @@ void Game::GameScreen::Update() {
     ManageSpritesShootBack();
 
     MoveEnemies();
+
+    ManageSnake();
     
     //increment frames;
     frames++;
@@ -143,7 +159,8 @@ void Game::GameScreen::Draw() {
     for (Sprite &b : sprite_bullets) {
         b.Draw();
     }
-    
+
+    snake.Draw();
 
     //Display Score 
     DrawText(itoa(score, groesse, 10), 210, 10, 25, LIGHTGRAY);
@@ -266,4 +283,23 @@ void Game::GameScreen::GameOver() {
     currentScreen = &loseScreen;
     scores->AddScore(score);
     scores->WriteFile();
+}
+
+void Game::GameScreen::ManageSnake() {
+    if (frames != 0 && frames % 2000 == 0 && !snake.visible && snake.lives > 0) {
+        snake.visible = true;
+        snake.pos = { Utils::ScreenWidth - 30, Utils::ScreenHeight };
+    }
+
+    if (snake.visible) {
+        snake.MoveUp();
+        
+        if (bullet.visible && CheckCollision(bullet, snake)) {
+            snake.lives--;
+        }
+
+        if (snake.pos.y < 0) {
+            snake.visible = false;
+        }   
+    }
 }

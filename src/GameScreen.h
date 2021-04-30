@@ -6,6 +6,7 @@
 #include "Sprite.h"
 #include "Scores.h"
 #include "Direction.h"
+#include "Snake.h"
 
 
 namespace Game {
@@ -19,6 +20,7 @@ namespace Game {
         std::vector<Sprite> allowedToShotSprites;
         Sprite cat;
         Sprite bullet;
+        Snake snake;
         Direction dir = DOWN;
 
         Texture2D catTexture;
@@ -26,6 +28,8 @@ namespace Game {
         Texture2D heartTexture;
         Texture2D sprite_bulletTexture;
         Texture2D bulletTexture;
+        Texture2D snakeTexture;
+        Texture2D milkTexture;
 
 
         int score;
@@ -55,5 +59,7 @@ namespace Game {
         bool IsMouseIn(Vector2 mouse, int xMin, int xMax, int yMin, int yMax);
 
         void GameOver();
+
+        void ManageSnake();
     };
 }
