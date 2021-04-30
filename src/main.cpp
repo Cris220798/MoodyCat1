@@ -51,26 +51,6 @@ int main() {
         float scale = min((float)GetScreenWidth() / Game::ScreenWidth, (float)GetScreenHeight() / Game::ScreenHeight);
 
         // ---------------------------------------------------------------------------------
-        // Process input
-        // ---------------------------------------------------------------------------------
-
-        // Update virtual mouse (clamped mouse value behind game screen)
-        Vector2 mouse = GetMousePosition();
-        Vector2 virtualMouse = { 0 };
-        virtualMouse.x = (mouse.x - (static_cast<float>(GetScreenWidth()) - (Game::ScreenWidth * scale)) * 0.5f) / scale;
-        virtualMouse.y = (mouse.y - (static_cast<float>(GetScreenHeight()) - (Game::ScreenHeight * scale)) * 0.5f) / scale;
-        virtualMouse = ClampValue(virtualMouse, { 0, 0 }, { static_cast<float>(Game::ScreenWidth),
-                                                                             static_cast<float>(Game::ScreenHeight) });
-
-        // Your process input code here...
-
-        // ---------------------------------------------------------------------------------
-        // Update game
-        // ---------------------------------------------------------------------------------
-
-        // Your update game code here...
-
-        // ---------------------------------------------------------------------------------
         // Draw
         // ---------------------------------------------------------------------------------
 
