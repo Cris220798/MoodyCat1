@@ -60,13 +60,6 @@ int main() {
         // Draw everything in the render texture, note this will not be rendered on screen, yet
         BeginTextureMode(target);
         {
-            //            // Your drawing code here...
-            //            ClearBackground(WHITE);         // Clear render texture background color
-            //            DrawText(TextFormat("Default Mouse: [%i , %i]", (int) mouse.x, (int) mouse.y), 350, 25, 20, BLUE);
-            //            DrawText(TextFormat("Virtual Mouse: [%i , %i]", (int) virtualMouse.x, (int) virtualMouse.y), 350, 55, 20,
-            //                     GREEN);
-            //            DrawTexture(texture, 100, 100, WHITE);
-
             currentScreen->ProcessInput();
             currentScreen->Update();
             currentScreen->Draw();
