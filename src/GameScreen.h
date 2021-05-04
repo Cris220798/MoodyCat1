@@ -29,6 +29,8 @@ namespace Game {
         Texture2D sprite_bulletTexture;
         Texture2D bulletTexture;
         Texture2D snakeTexture;
+        Texture2D vacuumCleanerTexture;
+        Texture2D balloonTexture;
         Texture2D milkTexture;
 
 
@@ -36,6 +38,7 @@ namespace Game {
         char groesse[6];
         float live1;
         unsigned int frames;
+        unsigned int shield;
 
 
         void Init();

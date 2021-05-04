@@ -13,14 +13,17 @@ void Game::GameScreen::Init() {
     //init attributes
     score = 0;
     frames = 0;
+    shield = 0;
     live1 = 840.0f;
     catTexture = LoadTexture("./assets/graphics/cat.png");
     zucchiniTexture = LoadTexture("./assets/graphics/zucchini.png");
     heartTexture = LoadTexture("./assets/graphics/heart.png");
     sprite_bulletTexture = LoadTexture("./assets/graphics/sprite_bullet.png");
     bulletTexture = LoadTexture("./assets/graphics/bullet.png");
-    milkTexture = LoadTexture("./assets/graphics/milk.png");
+    vacuumCleanerTexture = LoadTexture("./assets/graphics/vacuumCleaner.png");
     snakeTexture = LoadTexture("./assets/graphics/snake.png");
+    balloonTexture = LoadTexture("./assets/graphics/balloon.png");
+    milkTexture = LoadTexture("./assets/graphics/milk.png");
 
     //clear vectors
     sprites.clear();
@@ -29,11 +32,11 @@ void Game::GameScreen::Init() {
 
     //init snake
     Vector2 snakePos = { -200, -200 };
-    this->snake = Snake(snakeTexture, snakePos, false, 100, 5.0f, 16);
+    this->snake = Snake(snakeTexture, snakePos, false, 100, 2.0f, 16);
 
     //init bullet with null
     Vector2 bulletPos = { -100, -100 };
-    this->bullet = Sprite(bulletTexture, bulletPos , false, 0, 5.0f, 16);
+    this->bullet = Sprite(bulletTexture, bulletPos , false, 0, 7.0f, 16);
 
     //create cat
     Vector2 catPos = { (float)10, (float)(Utils::ScreenHeight / 2) };
@@ -52,8 +55,14 @@ void Game::GameScreen::Init() {
             unsigned int posY = y * (Utils::SPRITE_HEIGHT + Utils::SPACE);
             Vector2 pos = { (float)(Utils::ScreenWidth - 60 - posX), (float)(posY + 45) };
             int rand = GetRandomValue(1, 100);
-            if (rand >= 1 && rand <= 30) {
-                sprites.emplace_back(milkTexture, pos, true, 20, 1.0f, 32);
+            if (rand >= 1 && rand <= 20) {
+                sprites.emplace_back(vacuumCleanerTexture, pos, true, 40, 1.0f, 32);
+            }
+            else if (rand > 20 && rand <= 50) {
+                sprites.emplace_back(balloonTexture, pos, true, 20, 1.0f, 32);
+            }
+            else if (rand > 50 && rand <= 55) {
+                sprites.emplace_back(milkTexture, pos, true, -1, 1.0f, 32);
             }
             else {
                 sprites.emplace_back(zucchiniTexture, pos, true, 10, 1.0f, 32);
@@ -120,6 +129,9 @@ void Game::GameScreen::Update() {
     
     //increment frames;
     frames++;
+
+    //manage shield
+    if (shield > 0) shield--;
 }
 
 void Game::GameScreen::Draw() {
@@ -127,6 +139,7 @@ void Game::GameScreen::Draw() {
     Vector2 mouse = GetMousePosition();
     
     DrawText("Score", 120, 10, 25, LIGHTGRAY);
+    if(shield > 0) DrawText("Shield active", 400, 10, 25, LIGHTGRAY);
     DrawText("Lives", 650, 10, 25, LIGHTGRAY);
  
     if ((mouse.x > 80) && (mouse.y > 500) && (mouse.x < 125) && (mouse.y < 520)) {
@@ -184,7 +197,8 @@ void Game::GameScreen::ManageCatBullets() {
             if (CheckCollision(bullet, s)) {
                 bullet.visible = false;
                 bullet.pos = { -100, -100 };
-                score += s.points;;
+                if (s.points == -1) shield += 250;
+                else score += s.points;
                 sprites.erase(sprites.begin() + j);
             }
         }
@@ -230,7 +244,7 @@ void Game::GameScreen::MoveEnemies() {
         //move
         sprite_bullet.MoveLeft();
         //check hit of cat
-        if (CheckCollision(sprite_bullet, cat)) {
+        if (CheckCollision(sprite_bullet, cat) && shield <= 0) {
             lives.erase(lives.begin());
             sprite_bullets.erase(sprite_bullets.begin() + i);
         }
