@@ -21,8 +21,10 @@ namespace Game {
         Sprite cat;
         Sprite bullet;
         Snake snake;
+        Sprite shieldSprite;
         Direction dir = DOWN;
 
+        Texture2D background;
         Texture2D catTexture;
         Texture2D zucchiniTexture;
         Texture2D heartTexture;
@@ -32,6 +34,7 @@ namespace Game {
         Texture2D vacuumCleanerTexture;
         Texture2D balloonTexture;
         Texture2D milkTexture;
+        Texture2D shieldTexture;
 
 
         int score;

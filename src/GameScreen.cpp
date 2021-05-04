@@ -24,6 +24,8 @@ void Game::GameScreen::Init() {
     snakeTexture = LoadTexture("./assets/graphics/snake.png");
     balloonTexture = LoadTexture("./assets/graphics/balloon.png");
     milkTexture = LoadTexture("./assets/graphics/milk.png");
+    shieldTexture = LoadTexture("./assets/graphics/newShield.png");
+    background = LoadTexture("./assets/graphics/backgrounds/background.png");
 
     //clear vectors
     sprites.clear();
@@ -41,6 +43,10 @@ void Game::GameScreen::Init() {
     //create cat
     Vector2 catPos = { (float)10, (float)(Utils::ScreenHeight / 2) };
     this->cat = Sprite(catTexture, catPos, true, 0, 3.0f, 32);
+
+    //create shield
+    Vector2 shieldPos = {catPos.x + cat.size, catPos.y};
+    this->shieldSprite = Sprite(shieldTexture, catPos, false, 0, 3.0f, 32);
     
     //create lives
     for (int i = 0; i < 3; i++) {
@@ -95,14 +101,19 @@ void Game::GameScreen::ProcessInput() {
         }
     }
 
-    //move the cat
+    //move the cat & shield
     if (IsKeyDown(KEY_W)) {
-        if (cat.pos.y >= 35)
+        if (cat.pos.y >= 35) {
             cat.MoveUp();
+            shieldSprite.MoveUp();
+        }
+            
+
     }
     if (IsKeyDown(KEY_S)) {
         if (cat.pos.y <= Utils::ScreenHeight - 75) {
             cat.MoveDown();
+            shieldSprite.MoveDown();
         }
     }
 }
@@ -132,28 +143,31 @@ void Game::GameScreen::Update() {
 
     //manage shield
     if (shield > 0) shield--;
+    if (shield <= 0) shieldSprite.visible = false;
 }
 
 void Game::GameScreen::Draw() {
     ClearBackground(BLACK);
     Vector2 mouse = GetMousePosition();
+
+    DrawTexture(background, 0, 0, RAYWHITE);
     
-    DrawText("Score", 120, 10, 25, LIGHTGRAY);
-    if(shield > 0) DrawText("Shield active", 400, 10, 25, LIGHTGRAY);
-    DrawText("Lives", 650, 10, 25, LIGHTGRAY);
+    DrawText("Score", 120, 10, 25, BLACK);
+    if(shield > 0) DrawText("Shield active", 400, 10, 25, BLACK);
+    DrawText("Lives", 650, 10, 25, BLACK);
  
     if ((mouse.x > 80) && (mouse.y > 500) && (mouse.x < 125) && (mouse.y < 520)) {
         DrawText("New", 80, 500, 25, GREEN);
     }
     else {
-        DrawText("New", 80, 500, 25, LIGHTGRAY);
+        DrawText("New", 80, 500, 25, BLACK);
     }
     
     if ((mouse.x > 750) && (mouse.y > 500) && (mouse.x < 800) && (mouse.y < 520)) {
         DrawText("Exit", 750, 500, 25, GREEN);
     }
     else {
-        DrawText("Exit", 750, 500, 25, LIGHTGRAY);
+        DrawText("Exit", 750, 500, 25, BLACK);
     }
 
     //draw sprites
@@ -172,6 +186,8 @@ void Game::GameScreen::Draw() {
     for (Sprite &b : sprite_bullets) {
         b.Draw();
     }
+
+    if (shieldSprite.visible) shieldSprite.Draw();
 
     snake.Draw();
 
@@ -197,7 +213,10 @@ void Game::GameScreen::ManageCatBullets() {
             if (CheckCollision(bullet, s)) {
                 bullet.visible = false;
                 bullet.pos = { -100, -100 };
-                if (s.points == -1) shield += 250;
+                if (s.points == -1) {
+                    shield += 250;
+                    shieldSprite.visible = true;
+                }
                 else score += s.points;
                 sprites.erase(sprites.begin() + j);
             }
@@ -243,6 +262,10 @@ void Game::GameScreen::MoveEnemies() {
         
         //move
         sprite_bullet.MoveLeft();
+        //check hit of shield
+        if (shield > 0 && CheckCollision(sprite_bullet, shieldSprite)) {
+            sprite_bullets.erase(sprite_bullets.begin() + i);
+        }
         //check hit of cat
         if (CheckCollision(sprite_bullet, cat) && shield <= 0) {
             lives.erase(lives.begin());
