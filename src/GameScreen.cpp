@@ -53,10 +53,10 @@ void Game::GameScreen::Init() {
             Vector2 pos = { (float)(Utils::ScreenWidth - 60 - posX), (float)(posY + 45) };
             int rand = GetRandomValue(1, 100);
             if (rand >= 1 && rand <= 30) {
-                sprites.emplace_back(milkTexture, pos, true, 20, 0.2f, 32);
+                sprites.emplace_back(milkTexture, pos, true, 20, 1.0f, 32);
             }
             else {
-                sprites.emplace_back(zucchiniTexture, pos, true, 10, 0.2f, 32);
+                sprites.emplace_back(zucchiniTexture, pos, true, 10, 1.0f, 32);
             }
             
         }
@@ -261,8 +261,9 @@ void Game::GameScreen::MoveEnemies() {
     //move the enemies
     for (int i = sprites.size() - 1; i >= 0; i--) {
         Sprite &sp = sprites.at(i);
+        int spLeft = (sprites.size() / 8);
         if (dir == LEFT) sp.speed = 20.0f;
-        else sp.speed = 0.3f;
+        else sp.speed = 0.3f + 0.8f - (float)spLeft/10;
         switch (dir) {
             case LEFT: sp.MoveLeft(); break;
             case RIGHT: sp.MoveRight(); break;

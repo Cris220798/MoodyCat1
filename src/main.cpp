@@ -19,6 +19,10 @@ Scores scores = Scores();
 
 
 int main() {
+    //init music
+    InitAudioDevice();
+
+
     // Enable config flags for resizable window and vertical synchro
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT | FLAG_MSAA_4X_HINT);
     InitWindow(Game::ScreenWidth, Game::ScreenHeight, Game::PROJECT_NAME);
