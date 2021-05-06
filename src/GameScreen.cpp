@@ -272,7 +272,7 @@ void Game::GameScreen::MoveEnemies() {
             sprite_bullets.erase(sprite_bullets.begin() + i);
         }
         //check if sprite bullet hits cat bullet
-        if (!bullet.visible && CheckCollision(bullet, sprite_bullet)) {
+        if (bullet.visible && CheckCollision(bullet, sprite_bullet)) {
             sprite_bullets.erase(sprite_bullets.begin() + i);
             bullet.visible = false;
         }
