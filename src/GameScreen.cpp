@@ -27,6 +27,10 @@ void Game::GameScreen::Init() {
     shieldTexture = LoadTexture("./assets/graphics/newShield.png");
     background = LoadTexture("./assets/graphics/backgrounds/background.png");
 
+    catHit = LoadSound("./assets/audio/sfx/catHit.wav");
+    catShoot = LoadSound("./assets/audio/sfx/catShoot.wav");
+    enemyShoot = LoadSound("./assets/audio/sfx/enemyShoot.wav");
+
     //clear vectors
     sprites.clear();
     sprite_bullets.clear();
@@ -104,6 +108,7 @@ void Game::GameScreen::ProcessInput() {
 
             bullet.pos = { bulletPosX, bulletPosY };
             bullet.visible = true;
+            PlaySound(catShoot);
         }
     }
 
@@ -261,6 +266,7 @@ void Game::GameScreen::ManageSpritesShootBack() {
         Sprite &shot = allowedToShotSprites.at(random);
         Vector2 pos = { shot.pos.x - 16, shot.pos.y + 8 };
         sprite_bullets.emplace_back(sprite_bulletTexture, pos, true, 0, 5.0f, 16);
+        PlaySound(enemyShoot);
     }
 }
 
@@ -278,6 +284,7 @@ void Game::GameScreen::MoveEnemies() {
         }
         //check hit of cat
         if (CheckCollision(sprite_bullet, cat) && shield <= 0) {
+            PlaySound(catHit);
             lives.erase(lives.begin());
             sprite_bullets.erase(sprite_bullets.begin() + i);
         }

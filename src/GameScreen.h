@@ -37,6 +37,8 @@ namespace Game {
         Texture2D milkTexture;
         Texture2D shieldTexture;
 
+        Sound catShoot, catHit, enemyShoot;
+
 
         int score;
         char groesse[6];
