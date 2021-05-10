@@ -32,6 +32,12 @@ void Game::GameScreen::Init() {
     sprite_bullets.clear();
     lives.clear();
 
+    //init backgrounds
+    Vector2 bg1Pos = { 0, 0 };
+    bg1 = Sprite(background, bg1Pos, true, 0, 0.5, 540);
+    Vector2 bg2Pos = { Utils::ScreenWidth-1, 0 };
+    bg2 = Sprite(background, bg2Pos, true, 0, 0.5, 540);
+
     //init snake
     Vector2 snakePos = { -200, -200 };
     this->snake = Snake(snakeTexture, snakePos, false, 100, 2.0f, 16);
@@ -119,6 +125,9 @@ void Game::GameScreen::ProcessInput() {
 }
 
 void Game::GameScreen::Update() {
+
+    //move backgrounds
+    MoveBackgrounds();
     
     //check if won
     if (sprites.empty()) {
@@ -150,7 +159,8 @@ void Game::GameScreen::Draw() {
     ClearBackground(BLACK);
     Vector2 mouse = GetMousePosition();
 
-    DrawTexture(background, 0, 0, RAYWHITE);
+    bg1.Draw();
+    bg2.Draw();
     
     DrawText("Score", 120, 10, 25, BLACK);
     if(shield > 0) DrawText("Shield active", 400, 10, 25, BLACK);
@@ -342,4 +352,11 @@ void Game::GameScreen::ManageSnake() {
             snake.visible = false;
         }   
     }
+}
+
+void Game::GameScreen::MoveBackgrounds() {
+    if (bg1.pos.x + Utils::ScreenWidth - bg1.speed < 0) bg1.pos.x = Utils::ScreenWidth-1;
+    bg1.MoveLeft();
+    if (bg2.pos.x + Utils::ScreenWidth - bg2.speed < 0) bg2.pos.x = Utils::ScreenWidth-1;
+    bg2.MoveLeft();
 }

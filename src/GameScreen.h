@@ -20,6 +20,7 @@ namespace Game {
         std::vector<Sprite> allowedToShotSprites;
         Sprite cat;
         Sprite bullet;
+        Sprite bg1, bg2;
         Snake snake;
         Sprite shieldSprite;
         Direction dir = DOWN;
@@ -67,5 +68,7 @@ namespace Game {
         void GameOver();
 
         void ManageSnake();
+
+        void MoveBackgrounds();
     };
 }
