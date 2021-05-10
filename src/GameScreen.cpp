@@ -26,6 +26,9 @@ void Game::GameScreen::Init() {
     milkTexture = LoadTexture("./assets/graphics/milk.png");
     shieldTexture = LoadTexture("./assets/graphics/newShield.png");
     background = LoadTexture("./assets/graphics/backgrounds/background.png");
+    sky = LoadTexture("./assets/graphics/backgrounds/sky.png");
+    cloudYellow = LoadTexture("./assets/graphics/backgrounds/cloudYellow.png");
+    cloudPink = LoadTexture("./assets/graphics/backgrounds/cloudPink.png");
 
     catHit = LoadSound("./assets/audio/sfx/catHit.wav");
     catShoot = LoadSound("./assets/audio/sfx/catShoot.wav");
@@ -39,11 +42,16 @@ void Game::GameScreen::Init() {
     sprite_bullets.clear();
     lives.clear();
 
-    //init backgrounds
-    Vector2 bg1Pos = { 0, 0 };
-    bg1 = Sprite(background, bg1Pos, true, 0, 0.5, 540);
-    Vector2 bg2Pos = { Utils::ScreenWidth-1, 0 };
-    bg2 = Sprite(background, bg2Pos, true, 0, 0.5, 540);
+    //init clouds
+    Vector2 cloudYellow1Pos = { 0, 0 };
+    cloudYellow1 = Sprite(cloudYellow, cloudYellow1Pos, true, 0, 0.5, 540);
+    Vector2 cloudYellow2Pos = { Utils::ScreenWidth-1, 0 };
+    cloudYellow2 = Sprite(cloudYellow, cloudYellow2Pos, true, 0, 0.5, 540);
+
+    Vector2 cloudPink1Pos = { 0, 0 };
+    cloudPink1 = Sprite(cloudPink, cloudPink1Pos, true, 0, 0.2, 540);
+    Vector2 cloudPink2Pos = { Utils::ScreenWidth - 1, 0 };
+    cloudPink2 = Sprite(cloudPink, cloudPink2Pos, true, 0, 0.2, 540);
 
     //init snake
     Vector2 snakePos = { -200, -200 };
@@ -68,11 +76,11 @@ void Game::GameScreen::Init() {
     }
 
     //create enemies
-    for (int x = 0; x < 8; x++) {
-        for (int y = 0; y < 8; y++) {
+    for (int x = 0; x < 7; x++) {
+        for (int y = 0; y < 7; y++) {
             unsigned int posX = (x + 1) * (Utils::SPRITE_WIDTH + Utils::SPACE);
             unsigned int posY = y * (Utils::SPRITE_HEIGHT + Utils::SPACE);
-            Vector2 pos = { (float)(Utils::ScreenWidth - 60 - posX), (float)(posY + 45) };
+            Vector2 pos = { (float)(Utils::ScreenWidth - 60 - posX), (float)(posY + 130) };
             int rand = GetRandomValue(1, 100);
             if (rand >= 1 && rand <= 20) {
                 sprites.emplace_back(vacuumCleanerTexture, pos, true, 40, 1.0f, 32);
@@ -117,7 +125,7 @@ void Game::GameScreen::ProcessInput() {
 
     //move the cat & shield
     if (IsKeyDown(KEY_W)) {
-        if (cat.pos.y >= 35) {
+        if (cat.pos.y >= 135) {
             cat.MoveUp();
             shieldSprite.MoveUp();
         }
@@ -175,8 +183,15 @@ void Game::GameScreen::Draw() {
     ClearBackground(BLACK);
     Vector2 mouse = GetMousePosition();
 
-    bg1.Draw();
-    bg2.Draw();
+    DrawTexture(sky, 0, 0, RAYWHITE);
+
+    cloudPink1.Draw();
+    cloudPink2.Draw();
+
+    cloudYellow1.Draw();
+    cloudYellow2.Draw();
+
+    DrawTexture(background, 0, 0, RAYWHITE);
     
     DrawText("Score", 120, 10, 25, BLACK);
     if(shield > 0) DrawText("Shield active", 400, 10, 25, BLACK);
@@ -315,7 +330,7 @@ void Game::GameScreen::MoveEnemies() {
     Direction newDir;
     for (int i = 0; !found && i < sprites.size(); i++) {
         Sprite& sp = sprites.at(i);
-        if (dir == UP && sp.pos.y - sp.speed <= 44 || dir == DOWN && sp.pos.y + sp.size + sp.speed >= Utils::ScreenHeight - 45) {
+        if (dir == UP && sp.pos.y - sp.speed <= 135 || dir == DOWN && sp.pos.y + sp.size + sp.speed >= Utils::ScreenHeight - 45) {
             if (oldDir == UP) newDir = DOWN;
             else newDir = UP;
             dir = LEFT;
@@ -326,9 +341,9 @@ void Game::GameScreen::MoveEnemies() {
     //move the enemies
     for (int i = sprites.size() - 1; i >= 0; i--) {
         Sprite &sp = sprites.at(i);
-        int spLeft = (sprites.size() / 8);
+        int spLeft = (sprites.size() / 7);
         if (dir == LEFT) sp.speed = 20.0f;
-        else sp.speed = 0.3f + 0.8f - (float)spLeft/10;
+        else sp.speed = 0.3f + 0.7f - (float)spLeft/10;
         switch (dir) {
             case LEFT: sp.MoveLeft(); break;
             case RIGHT: sp.MoveRight(); break;
@@ -373,8 +388,13 @@ void Game::GameScreen::ManageSnake() {
 }
 
 void Game::GameScreen::MoveBackgrounds() {
-    if (bg1.pos.x + Utils::ScreenWidth - bg1.speed < 0) bg1.pos.x = Utils::ScreenWidth-1;
-    bg1.MoveLeft();
-    if (bg2.pos.x + Utils::ScreenWidth - bg2.speed < 0) bg2.pos.x = Utils::ScreenWidth-1;
-    bg2.MoveLeft();
+    if (cloudYellow1.pos.x + Utils::ScreenWidth - cloudYellow1.speed < 0) cloudYellow1.pos.x = Utils::ScreenWidth-1;
+    cloudYellow1.MoveLeft();
+    if (cloudYellow2.pos.x + Utils::ScreenWidth - cloudYellow2.speed < 0) cloudYellow2.pos.x = Utils::ScreenWidth-1;
+    cloudYellow2.MoveLeft();
+
+    if (cloudPink1.pos.x + Utils::ScreenWidth - cloudPink1.speed < 0) cloudPink1.pos.x = Utils::ScreenWidth - 1;
+    cloudPink1.MoveLeft();
+    if (cloudPink2.pos.x + Utils::ScreenWidth - cloudPink2.speed < 0) cloudPink2.pos.x = Utils::ScreenWidth - 1;
+    cloudPink2.MoveLeft();
 }

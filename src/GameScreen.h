@@ -20,12 +20,12 @@ namespace Game {
         std::vector<Sprite> allowedToShotSprites;
         Sprite cat;
         Sprite bullet;
-        Sprite bg1, bg2;
+        Sprite cloudPink1, cloudPink2, cloudYellow1, cloudYellow2;
         Snake snake;
         Sprite shieldSprite;
         Direction dir = DOWN;
 
-        Texture2D background;
+        Texture2D background, sky;
         Texture2D catTexture;
         Texture2D zucchiniTexture;
         Texture2D heartTexture;
@@ -36,6 +36,7 @@ namespace Game {
         Texture2D balloonTexture;
         Texture2D milkTexture;
         Texture2D shieldTexture;
+        Texture2D cloudYellow, cloudPink;
 
         Sound catShoot, catHit, enemyShoot;
 
