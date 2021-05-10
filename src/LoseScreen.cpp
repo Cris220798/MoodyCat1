@@ -27,7 +27,12 @@ void Game::LoseScreen::ProcessInput() {
 }
 
 void Game::LoseScreen::Update() {
-
+    if (!musicPlayed) {
+        music = LoadMusicStream("./assets/audio/tracks/gameOver.wav");
+        PlayMusicStream(music);
+        musicPlayed = true;
+    }
+    UpdateMusicStream(music);
 }
 
 

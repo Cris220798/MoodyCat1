@@ -39,6 +39,9 @@ namespace Game {
 
         Sound catShoot, catHit, enemyShoot;
 
+        Music music;
+        bool playMusic = false;
+
 
         int score;
         char groesse[6];

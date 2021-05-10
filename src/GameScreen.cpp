@@ -31,6 +31,9 @@ void Game::GameScreen::Init() {
     catShoot = LoadSound("./assets/audio/sfx/catShoot.wav");
     enemyShoot = LoadSound("./assets/audio/sfx/enemyShoot.wav");
 
+    music = LoadMusicStream("./assets/audio/tracks/inGame.mp3");
+    
+
     //clear vectors
     sprites.clear();
     sprite_bullets.clear();
@@ -130,6 +133,14 @@ void Game::GameScreen::ProcessInput() {
 }
 
 void Game::GameScreen::Update() {
+
+    if (!playMusic) {
+        
+        PlayMusicStream(music);
+        playMusic = true;
+        std::cout << "play" << std::endl;
+    }
+    UpdateMusicStream(music);
 
     //move backgrounds
     MoveBackgrounds();
