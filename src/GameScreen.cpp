@@ -14,7 +14,7 @@ void Game::GameScreen::Init() {
     score = 0;
     frames = 0;
     shield = 0;
-    live1 = 840.0f;
+    live1 = 800.0f;
     catTexture = LoadTexture("./assets/graphics/cat.png");
     zucchiniTexture = LoadTexture("./assets/graphics/zucchini.png");
     heartTexture = LoadTexture("./assets/graphics/heart.png");
@@ -44,35 +44,35 @@ void Game::GameScreen::Init() {
 
     //init clouds
     Vector2 cloudYellow1Pos = { 0, 0 };
-    cloudYellow1 = Sprite(cloudYellow, cloudYellow1Pos, true, 0, 0.5, 540);
+    cloudYellow1 = Sprite(cloudYellow, cloudYellow1Pos, true, 0, 0.5, 960, 540);
     Vector2 cloudYellow2Pos = { Utils::ScreenWidth-1, 0 };
-    cloudYellow2 = Sprite(cloudYellow, cloudYellow2Pos, true, 0, 0.5, 540);
+    cloudYellow2 = Sprite(cloudYellow, cloudYellow2Pos, true, 0, 0.5, 960, 540);
 
     Vector2 cloudPink1Pos = { 0, 0 };
-    cloudPink1 = Sprite(cloudPink, cloudPink1Pos, true, 0, 0.2, 540);
+    cloudPink1 = Sprite(cloudPink, cloudPink1Pos, true, 0, 0.2, 960, 540);
     Vector2 cloudPink2Pos = { Utils::ScreenWidth - 1, 0 };
-    cloudPink2 = Sprite(cloudPink, cloudPink2Pos, true, 0, 0.2, 540);
+    cloudPink2 = Sprite(cloudPink, cloudPink2Pos, true, 0, 0.2, 960, 540);
 
     //init snake
     Vector2 snakePos = { -200, -200 };
-    this->snake = Snake(snakeTexture, snakePos, false, 100, 2.0f, 16);
+    this->snake = Snake(snakeTexture, snakePos, false, 100, 2.0f, 34, 40);
 
     //init bullet with null
     Vector2 bulletPos = { -100, -100 };
-    this->bullet = Sprite(bulletTexture, bulletPos , false, 0, 7.0f, 16);
+    this->bullet = Sprite(bulletTexture, bulletPos , false, 0, 7.0f, 16, 16);
 
     //create cat
     Vector2 catPos = { (float)10, (float)(Utils::ScreenHeight / 2) };
-    this->cat = Sprite(catTexture, catPos, true, 0, 3.0f, 32);
+    this->cat = Sprite(catTexture, catPos, true, 0, 3.0f, 33, 40);
 
     //create shield
-    Vector2 shieldPos = {catPos.x + cat.size, catPos.y};
-    this->shieldSprite = Sprite(shieldTexture, catPos, false, 0, 3.0f, 32);
+    Vector2 shieldPos = {catPos.x + cat.width, catPos.y};
+    this->shieldSprite = Sprite(shieldTexture, catPos, false, 0, 3.0f, 33, 40);
     
     //create lives
     for (int i = 0; i < 3; i++) {
-        Vector2 pos = { live1 - (40 * (i + 1)), (float)5 };
-        lives.emplace_back(heartTexture, pos , true, 0, 0, 16);
+        Vector2 pos = { live1 - (40 * (i + 1)), (float)38 };
+        lives.emplace_back(heartTexture, pos , true, 0, 0, 16, 16);
     }
 
     //create enemies
@@ -83,16 +83,16 @@ void Game::GameScreen::Init() {
             Vector2 pos = { (float)(Utils::ScreenWidth - 60 - posX), (float)(posY + 130) };
             int rand = GetRandomValue(1, 100);
             if (rand >= 1 && rand <= 20) {
-                sprites.emplace_back(vacuumCleanerTexture, pos, true, 40, 1.0f, 32);
+                sprites.emplace_back(vacuumCleanerTexture, pos, true, 40, 1.0f, 34, 40);
             }
             else if (rand > 20 && rand <= 50) {
-                sprites.emplace_back(balloonTexture, pos, true, 20, 1.0f, 32);
+                sprites.emplace_back(balloonTexture, pos, true, 20, 1.0f, 34, 40);
             }
             else if (rand > 50 && rand <= 55) {
-                sprites.emplace_back(milkTexture, pos, true, -1, 1.0f, 32);
+                sprites.emplace_back(milkTexture, pos, true, -1, 1.0f, 34, 40);
             }
             else {
-                sprites.emplace_back(zucchiniTexture, pos, true, 10, 1.0f, 32);
+                sprites.emplace_back(zucchiniTexture, pos, true, 10, 1.0f, 34, 40);
             }
             
         }
@@ -193,9 +193,8 @@ void Game::GameScreen::Draw() {
 
     DrawTexture(background, 0, 0, RAYWHITE);
     
-    DrawText("Score", 120, 10, 25, BLACK);
-    if(shield > 0) DrawText("Shield active", 400, 10, 25, BLACK);
-    DrawText("Lives", 650, 10, 25, BLACK);
+    DrawText("Score", 80, 35, 25, BLACK);
+    DrawText("Lives", 600, 35, 25, BLACK);
  
     if ((mouse.x > 80) && (mouse.y > 500) && (mouse.x < 125) && (mouse.y < 520)) {
         DrawText("New", 80, 500, 25, GREEN);
@@ -233,7 +232,7 @@ void Game::GameScreen::Draw() {
     snake.Draw();
 
     //Display Score 
-    DrawText(itoa(score, groesse, 10), 210, 10, 25, LIGHTGRAY);
+    DrawText(itoa(score, groesse, 10), 170, 35, 25, GRAY);
 }
 
 void Game::GameScreen::SetScore(Scores* scores) {
@@ -241,8 +240,8 @@ void Game::GameScreen::SetScore(Scores* scores) {
 }
 
 bool Game::GameScreen::CheckCollision(const Sprite& s1, const Sprite& s2) {
-    return (s1.pos.x < s2.pos.x + s2.size && s1.pos.x + s1.size > s2.pos.x
-        && s1.pos.y < s2.pos.y + s2.size && s1.pos.y + s1.size > s2.pos.y);
+    return (s1.pos.x < s2.pos.x + s2.width && s1.pos.x + s1.width > s2.pos.x
+        && s1.pos.y < s2.pos.y + s2.height && s1.pos.y + s1.height > s2.pos.y);
 }
 
 void Game::GameScreen::ManageCatBullets() {
@@ -291,7 +290,7 @@ void Game::GameScreen::ManageSpritesShootBack() {
         int random = GetRandomValue(0, size - 1);
         Sprite &shot = allowedToShotSprites.at(random);
         Vector2 pos = { shot.pos.x - 16, shot.pos.y + 8 };
-        sprite_bullets.emplace_back(sprite_bulletTexture, pos, true, 0, 5.0f, 16);
+        sprite_bullets.emplace_back(sprite_bulletTexture, pos, true, 0, 5.0f, 16, 16);
         PlaySound(enemyShoot);
     }
 }
@@ -320,7 +319,7 @@ void Game::GameScreen::MoveEnemies() {
             bullet.visible = false;
         }
         //check if bullet leaves screen
-        if(sprite_bullet.pos.x < -sprite_bullet.size)
+        if(sprite_bullet.pos.x < -sprite_bullet.width)
             sprite_bullets.erase(sprite_bullets.begin() + i);
     }
 
@@ -330,7 +329,7 @@ void Game::GameScreen::MoveEnemies() {
     Direction newDir;
     for (int i = 0; !found && i < sprites.size(); i++) {
         Sprite& sp = sprites.at(i);
-        if (dir == UP && sp.pos.y - sp.speed <= 135 || dir == DOWN && sp.pos.y + sp.size + sp.speed >= Utils::ScreenHeight - 45) {
+        if (dir == UP && sp.pos.y - sp.speed <= 135 || dir == DOWN && sp.pos.y + sp.height + sp.speed >= Utils::ScreenHeight - 45) {
             if (oldDir == UP) newDir = DOWN;
             else newDir = UP;
             dir = LEFT;
@@ -381,7 +380,7 @@ void Game::GameScreen::ManageSnake() {
             snake.lives--;
         }
 
-        if (snake.pos.y - snake.size < 0) {
+        if (snake.pos.y - snake.height < 0) {
             snake.visible = false;
         }   
     }

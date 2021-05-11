@@ -10,11 +10,11 @@ struct Sprite {
     Sprite() = default;
     int points;
     float speed;
-    int size;
+    int height, width;
 
     explicit Sprite(Texture2D texture) : texture(texture) {}
 
-    Sprite(Texture2D texture, Vector2 pos, bool visible, int points, float speed, int size) : texture(texture), pos(pos), visible(visible), points(points), speed(speed), size(size) {}
+    Sprite(Texture2D texture, Vector2 pos, bool visible, int points, float speed, int width, int height) : texture(texture), pos(pos), visible(visible), points(points), speed(speed), width(width), height(height) {}
 
     Sprite(Sprite && other)  noexcept : texture(other.texture), pos(other.pos), visible(other.visible) {}
 

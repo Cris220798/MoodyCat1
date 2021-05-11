@@ -45,6 +45,7 @@ int main() {
     gameScreen.Init();
     gameScreen.SetScore(&scores);
     scores.Init();
+    menuScreen.Init();
     scores.ReadFile();
     scoreScreen.SetScores(&scores);
 
