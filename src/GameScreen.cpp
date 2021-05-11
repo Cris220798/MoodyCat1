@@ -11,6 +11,7 @@
 
 void Game::GameScreen::Init() {
     //init attributes
+    playMusic = false;
     score = 0;
     frames = 0;
     shield = 0;
@@ -24,7 +25,7 @@ void Game::GameScreen::Init() {
     snakeTexture = LoadTexture("./assets/graphics/snake.png");
     balloonTexture = LoadTexture("./assets/graphics/balloon.png");
     milkTexture = LoadTexture("./assets/graphics/milk.png");
-    shieldTexture = LoadTexture("./assets/graphics/newShield.png");
+    shieldTexture = LoadTexture("./assets/graphics/shield.png");
     background = LoadTexture("./assets/graphics/backgrounds/background.png");
     sky = LoadTexture("./assets/graphics/backgrounds/sky.png");
     cloudYellow = LoadTexture("./assets/graphics/backgrounds/cloudYellow.png");
@@ -200,14 +201,14 @@ void Game::GameScreen::Draw() {
         DrawText("New", 80, 500, 25, GREEN);
     }
     else {
-        DrawText("New", 80, 500, 25, BLACK);
+        DrawText("New", 80, 500, 25, WHITE);
     }
     
     if ((mouse.x > 750) && (mouse.y > 500) && (mouse.x < 800) && (mouse.y < 520)) {
         DrawText("Exit", 750, 500, 25, GREEN);
     }
     else {
-        DrawText("Exit", 750, 500, 25, BLACK);
+        DrawText("Exit", 750, 500, 25, WHITE);
     }
 
     //draw sprites
@@ -290,7 +291,7 @@ void Game::GameScreen::ManageSpritesShootBack() {
         int random = GetRandomValue(0, size - 1);
         Sprite &shot = allowedToShotSprites.at(random);
         Vector2 pos = { shot.pos.x - 16, shot.pos.y + 8 };
-        sprite_bullets.emplace_back(sprite_bulletTexture, pos, true, 0, 5.0f, 16, 16);
+        sprite_bullets.emplace_back(sprite_bulletTexture, pos, true, 0, 5.0f, 16, 6);
         PlaySound(enemyShoot);
     }
 }
