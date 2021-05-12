@@ -123,7 +123,7 @@ void Game::GameScreen::ProcessInput() {
             PlaySound(catShoot);
         }
     }
-
+    /*
     //move the cat & shield
     if (IsKeyDown(KEY_W)) {
         if (cat.pos.y >= 135) {
@@ -138,7 +138,12 @@ void Game::GameScreen::ProcessInput() {
             cat.MoveDown();
             shieldSprite.MoveDown();
         }
-    }
+    }*/
+
+    //move the cat with mouse
+    if (mouse.y < 135) cat.pos.y = 135;
+    else if (mouse.y > Utils::ScreenHeight - 75) cat.pos.y = Utils::ScreenHeight - 75;
+    else cat.pos.y = mouse.y;
 }
 
 void Game::GameScreen::Update() {
