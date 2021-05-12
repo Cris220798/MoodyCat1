@@ -18,8 +18,9 @@ namespace Game {
         std::vector<Sprite> sprite_bullets;
         std::vector<Sprite> lives;
         std::vector<Sprite> allowedToShotSprites;
+        std::vector<Sprite> bullets;
         Sprite cat;
-        Sprite bullet;
+        //Sprite bullet;
         Sprite cloudPink1, cloudPink2, cloudYellow1, cloudYellow2;
         Snake snake;
         Sprite shieldSprite;

@@ -42,6 +42,7 @@ void Game::GameScreen::Init() {
     sprites.clear();
     sprite_bullets.clear();
     lives.clear();
+    bullets.clear();
 
     //init clouds
     Vector2 cloudYellow1Pos = { 0, 0 };
@@ -59,8 +60,8 @@ void Game::GameScreen::Init() {
     this->snake = Snake(snakeTexture, snakePos, false, 100, 2.0f, 34, 40);
 
     //init bullet with null
-    Vector2 bulletPos = { -100, -100 };
-    this->bullet = Sprite(bulletTexture, bulletPos , false, 0, 7.0f, 16, 16);
+    /*Vector2 bulletPos = { -100, -100 };
+    this->bullet = Sprite(bulletTexture, bulletPos , false, 0, 7.0f, 16, 16);*/
 
     //create cat
     Vector2 catPos = { (float)10, (float)(Utils::ScreenHeight / 2) };
@@ -113,13 +114,13 @@ void Game::GameScreen::ProcessInput() {
             //return to main menu
             currentScreen = &menuScreen;
         }
-        else if (!bullet.visible) {
+        else  {
             //cat-bullet created wih mouse click
             float bulletPosX = cat.pos.x + 12;
             float bulletPosY = cat.pos.y + 8;
 
-            bullet.pos = { bulletPosX, bulletPosY };
-            bullet.visible = true;
+            Vector2 bulletPos = { bulletPosX, bulletPosY };
+            bullets.emplace_back(bulletTexture, bulletPos, true, 0, 7.0f, 16, 16);
             PlaySound(catShoot);
         }
     }
@@ -144,6 +145,7 @@ void Game::GameScreen::ProcessInput() {
     if (mouse.y < 135) cat.pos.y = 135;
     else if (mouse.y > Utils::ScreenHeight - 75) cat.pos.y = Utils::ScreenHeight - 75;
     else cat.pos.y = mouse.y;
+    if (shieldSprite.visible) shieldSprite.pos = cat.pos;
 }
 
 void Game::GameScreen::Update() {
@@ -227,7 +229,10 @@ void Game::GameScreen::Draw() {
         s.Draw();
     }
 
-    if (bullet.visible) bullet.Draw();
+    //if (bullet.visible) bullet.Draw()
+    for (Sprite& b : bullets) {
+        b.Draw();
+    }
 
     for (Sprite &b : sprite_bullets) {
         b.Draw();
@@ -251,14 +256,15 @@ bool Game::GameScreen::CheckCollision(const Sprite& s1, const Sprite& s2) {
 }
 
 void Game::GameScreen::ManageCatBullets() {
-    if (bullet.visible) {
+    for (int i = bullets.size() - 1; i >= 0; i--) {
+        Sprite& bullet = bullets.at(i);
         bullet.MoveRight();
+        bool col = false;
         //Collision detection
-        for (int j = sprites.size() - 1; j >= 0 && bullet.visible; j--) {
+        for (int j = sprites.size() - 1; j >= 0; j--) {
             const Sprite& s = sprites.at(j);
             if (CheckCollision(bullet, s)) {
-                bullet.visible = false;
-                bullet.pos = { -100, -100 };
+                col = true;
                 if (s.points == -1) {
                     shield += 250;
                     shieldSprite.visible = true;
@@ -267,7 +273,7 @@ void Game::GameScreen::ManageCatBullets() {
                 sprites.erase(sprites.begin() + j);
             }
         }
-        if (bullet.visible && bullet.pos.x >= Utils::ScreenWidth) bullet.visible = false;
+        if (col) bullets.erase(bullets.begin() + i);
     }
 }
 
@@ -320,10 +326,14 @@ void Game::GameScreen::MoveEnemies() {
             sprite_bullets.erase(sprite_bullets.begin() + i);
         }
         //check if sprite bullet hits cat bullet
-        if (bullet.visible && CheckCollision(bullet, sprite_bullet)) {
-            sprite_bullets.erase(sprite_bullets.begin() + i);
-            bullet.visible = false;
+        for (int j = bullets.size() - 1; j >= 0; j--) {
+            Sprite& bullet = bullets.at(j);
+            if (CheckCollision(bullet, sprite_bullet)) {
+                sprite_bullets.erase(sprite_bullets.begin() + i);
+                bullets.erase(bullets.begin() + j);
+            }
         }
+        
         //check if bullet leaves screen
         if(sprite_bullet.pos.x < -sprite_bullet.width)
             sprite_bullets.erase(sprite_bullets.begin() + i);
@@ -382,9 +392,15 @@ void Game::GameScreen::ManageSnake() {
     if (snake.visible) {
         snake.MoveUp();
         
-        if (bullet.visible && CheckCollision(bullet, snake)) {
-            snake.lives--;
+        for (int i = bullets.size() - 1; i >= 0; i--) {
+            Sprite& bullet = bullets.at(i);
+            if (CheckCollision(bullet, snake)) {
+                snake.lives--;
+                snake.visible = false;
+                bullets.erase(bullets.begin() + i);
+            }
         }
+        
 
         if (snake.pos.y - snake.height < 0) {
             snake.visible = false;
